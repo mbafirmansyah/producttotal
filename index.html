@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Item Adder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 5px;
+            margin: 5px;
+            width: 200px;
+        }
+        .container {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .service-fees {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .service-fees label {
+            margin-bottom: 5px;
+        }
+        .service-fees input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .total-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .total-container h3 {
+            margin-top: 10px;
+        }
+        .total-amount {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Product Order List</h1>
+
+    <div>
+        <label for="product">Product Name:</label>
+        <input type="text" id="product" placeholder="Enter product name">
+        <label for="price">Price (Rp):</label>
+        <input type="number" id="price" placeholder="Enter price">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter quantity">
+        <button onclick="addItem()">Add Item</button>
+    </div>
+
+    <!-- Service Fees Section -->
+    <div class="service-fees">
+        <label for="shippingFee">Shipping Fee (Rp):</label>
+        <input type="number" id="shippingFee" value="12000" placeholder="Enter shipping fee">
+        <label for="serviceFee">Service Fee (Rp):</label>
+        <input type="number" id="serviceFee" value="3000" placeholder="Enter service fee">
+        <label for="discount">Discount (Rp):</label>
+        <input type="number" id="discount" value="12000" placeholder="Enter discount">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Product Name</th>
+                <th>Price (Rp)</th>
+                <th>Quantity</th>
+                <th>Subtotal (Rp)</th>
+            </tr>
+        </thead>
+        <tbody id="orderTable">
+            <!-- Dynamic rows will appear here -->
+        </tbody>
+    </table>
+
+    <!-- Total Section -->
+    <div class="total-container">
+        <h3>Total Calculation:</h3>
+        <p>Subtotal from items: <span id="itemTotal">Rp 0</span></p>
+        <p>Shipping Fee: <span id="shippingFeeTotal">Rp 0</span></p>
+        <p>Service Fee: <span id="serviceFeeTotal">Rp 0</span></p>
+        <p>Discount: <span id="discountTotal">Rp 0</span></p>
+        <h3 class="total-amount">Total: <span id="totalAmount">Rp 0</span></h3>
+    </div>
+</div>
+
+<script>
+    let itemCount = 0;
+    let totalAmount = 0;
+    let itemTotal = 0;
+    let serviceFee = parseInt(document.getElementById("serviceFee").value);
+    let shippingFee = parseInt(document.getElementById("shippingFee").value);
+    let discount = parseInt(document.getElementById("discount").value);
+
+    // Function to format numbers with thousand separator
+    function formatNumber(number) {
+        return number.toLocaleString('id-ID');
+    }
+
+    // Function to calculate total with fees and discount
+    function calculateTotal() {
+        const totalBeforeFees = itemTotal;
+        const subtotal = totalBeforeFees + serviceFee + shippingFee - discount;
+        
+        document.getElementById("itemTotal").innerText = `Rp ${formatNumber(totalBeforeFees)}`;
+        document.getElementById("shippingFeeTotal").innerText = `Rp ${formatNumber(shippingFee)}`;
+        document.getElementById("serviceFeeTotal").innerText = `Rp ${formatNumber(serviceFee)}`;
+        document.getElementById("discountTotal").innerText = `Rp ${formatNumber(discount)}`;
+        document.getElementById("totalAmount").innerText = `Rp ${formatNumber(subtotal)}`;
+    }
+
+    function addItem() {
+        const product = document.getElementById("product").value;
+        const price = parseFloat(document.getElementById("price").value);
+        const quantity = parseInt(document.getElementById("quantity").value);
+
+        if (!product || isNaN(price) || isNaN(quantity) || quantity <= 0 || price <= 0) {
+            alert("Please fill in all fields with valid data.");
+            return;
+        }
+
+        itemCount++;
+        const subtotal = price * quantity;
+        itemTotal += subtotal;
+
+        // Add new row to the table
+        const table = document.getElementById("orderTable");
+        const row = table.insertRow();
+        row.innerHTML = `
+            <td>${itemCount}</td>
+            <td>${product}</td>
+            <td>Rp ${formatNumber(price)}</td>
+            <td>${quantity}</td>
+            <td>Rp ${formatNumber(subtotal)}</td>
+        `;
+
+        // Recalculate total with service fee, shipping, and discount
+        calculateTotal();
+
+        // Clear input fields
+        document.getElementById("product").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("quantity").value = "";
+    }
+
+    // Event listeners to update total if any fee or discount changes
+    document.getElementById("serviceFee").addEventListener("input", function() {
+        serviceFee = parseInt(this.value);
+        calculateTotal();
+    });
+
+    document.getElementById("shippingFee").addEventListener("input", function() {
+        shippingFee = parseInt(this.value);
+        calculateTotal();
+    });
+
+    document.getElementById("discount").addEventListener("input", function() {
+        discount = parseInt(this.value);
+        calculateTotal();
+    });
+</script>
+
+</body>
+</html>
