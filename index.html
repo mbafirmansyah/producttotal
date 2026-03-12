@@ -1,246 +1,509 @@
+
+
+
+
+buat agar itemnya bisa di ubah seperti nama barang harga dan kuantiti
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Item Adder</title>
+    <title>Order Receipt</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
             margin: 0;
             padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         h1 {
             text-align: center;
-            color: #333;
-            margin-top: 30px;
+            color: #ff5f00;
+            font-size: 2em;
         }
 
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .input-section {
-            display: flex;
-            flex-direction: column;
+        .header, .order-details, .fees {
             margin-bottom: 20px;
         }
 
-        .input-section label {
-            font-size: 1.1em;
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        .input-section input {
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        .input-section input:focus {
-            border-color: #4CAF50;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 1.1em;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            font-size: 1em;
-        }
-
-        th {
-            background-color: #f1f1f1;
-        }
-
-        .service-fees, .total-container {
-            margin-top: 20px;
+        .header .title {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .service-fees input, .total-container p {
-            font-size: 1.1em;
-            margin-bottom: 10px;
+        .header .title img {
+            width: 50px;
         }
 
-        .total-amount {
-            font-weight: bold;
-            font-size: 1.3em;
-            color: #4CAF50;
-        }
-
-        .total-container h3 {
-            margin-top: 10px;
+        .header .title h2 {
+            margin: 0;
             color: #333;
         }
+
+        .header .title .shopee-text {
+            color: #ff5f00;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .order-details, .fees {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .order-details table, .fees table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-details th, .order-details td, .fees th, .fees td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .order-details th, .fees th {
+            background-color: #f4f4f4;
+        }
+
+        .order-details td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .totals {
+            font-weight: bold;
+            text-align: right;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .totals .total-amount {
+            color: #ff5f00;
+            font-size: 1.4em;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Product Order List</h1>
-
-    <div class="input-section">
-        <label for="product">Product Name:</label>
-        <input type="text" id="product" placeholder="Enter product name">
-        <label for="price">Price (Rp):</label>
-        <input type="number" id="price" placeholder="Enter price">
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" placeholder="Enter quantity">
-        <button onclick="addItem()">Add Item</button>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="title">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Shopee_logo_2021.svg/1200px-Shopee_logo_2021.svg.png" alt="Shopee Logo">
+            <h2 class="shopee-text">Nota Pesanan</h2>
+        </div>
+        <div>
+            <p><strong>Nama Pembeli:</strong> mbafirmansyah</p>
+            <p><strong>Nama Penjual:</strong> TokoCartridge.Com</p>
+            <p><strong>Alamat Pembeli:</strong> Jl. Pemigaan Bar. No.12, RT.12/RW.1, Roa Malaka, Kota Jakarta Barat, DKI Jakarta</p>
+            <p><strong>No. Handphone Pembeli:</strong> 628788800575</p>
+        </div>
     </div>
 
-    <div class="service-fees">
-        <label for="shippingFee">Shipping Fee (Rp):</label>
-        <input type="number" id="shippingFee" value="12000" placeholder="Enter shipping fee">
-        <label for="serviceFee">Service Fee (Rp):</label>
-        <input type="number" id="serviceFee" value="3000" placeholder="Enter service fee">
-        <label for="discount">Discount (Rp):</label>
-        <input type="number" id="discount" value="12000" placeholder="Enter discount">
+    <!-- Order Details -->
+    <div class="order-details">
+        <h3 class="section-title">Rincian Pesanan</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Produk</th>
+                    <th>Harga Produk</th>
+                    <th>Kuantitas</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Cartridge Toner HP W1107A M107A</td>
+                    <td>Rp109.000</td>
+                    <td>8</td>
+                    <td>Rp872.000</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Cartridge Toner Brother TN B027</td>
+                    <td>Rp210.000</td>
+                    <td>4</td>
+                    <td>Rp840.000</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
-    <table>
-        <thead>
+    <!-- Fees Section -->
+    <div class="fees">
+        <h3 class="section-title">Subtotal & Biaya Lainnya</h3>
+        <table>
             <tr>
-                <th>No</th>
-                <th>Product Name</th>
-                <th>Price (Rp)</th>
-                <th>Quantity</th>
-                <th>Subtotal (Rp)</th>
+                <th>Subtotal Pesanan</th>
+                <td>Rp1.712.000</td>
             </tr>
-        </thead>
-        <tbody id="orderTable">
-            <!-- Dynamic rows will appear here -->
-        </tbody>
-    </table>
+            <tr>
+                <th>Subtotal Pengiriman</th>
+                <td>Rp12.000</td>
+            </tr>
+            <tr>
+                <th>Biaya Layanan</th>
+                <td>Rp3.000</td>
+            </tr>
+            <tr>
+                <th>Total Diskon Pengiriman</th>
+                <td>-Rp12.000</td>
+            </tr>
+        </table>
+    </div>
 
-    <div class="total-container">
-        <h3>Total Calculation:</h3>
-        <p>Subtotal from items: <span id="itemTotal">Rp 0</span></p>
-        <p>Shipping Fee: <span id="shippingFeeTotal">Rp 0</span></p>
-        <p>Service Fee: <span id="serviceFeeTotal">Rp 0</span></p>
-        <p>Discount: <span id="discountTotal">Rp 0</span></p>
-        <h3 class="total-amount">Total: <span id="totalAmount">Rp 0</span></h3>
+    <!-- Total Calculation -->
+    <div class="totals">
+        <p>Total Pembayaran: <span class="total-amount">Rp1.715.000</span></p>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <p>Biaya-biaya yang ditagihkan oleh Shopee (jika ada) sudah termasuk PPN</p>
+    </div>
+</div>
+
+</body>
+</html>
+
+To allow for editable fields such as product name, price, and quantity in the order receipt, you can replace the static values inside the table with HTML form input elements (such as text inputs and number inputs). This will allow users to modify the values directly on the page.
+
+Here is an updated version of your code that includes editable fields:
+
+
+
+Key Changes:
+Editable Fields:
+
+The product name, price, and quantity are now inside <input> elements that can be edited. For prices and quantities, I've used type="number" to ensure only numeric input is accepted.
+
+Readonly for Subtotal & Total:
+
+The "Subtotal" and "Total Pembayaran" fields are set to readonly, so users cannot modify them directly. However, they will need to be updated based on changes to the price and quantity, which could be handled with JavaScript.
+
+If you want to dynamically calculate the subtotal and total when a user changes the quantity or price, you'd need to add some JavaScript to automatically update those values based on the changes made. Would you like help with that as well?
+
+
+tolong jalankan perhitungannya juga
+
+To make the order receipt dynamically update the subtotal and total when you change the price or quantity, we can add JavaScript to perform the calculations.
+
+Here's the updated HTML with JavaScript added for calculating the subtotal and total:
+
+
+
+Key Additions:
+JavaScript updateTotals(): This function calculates the subtotal for each product, then updates the overall order subtotal and total payment based on the user's changes to quantity or price.
+
+Event Listeners: Each input field for price and quantity has an onchange attribute, which calls the updateTotals() function whenever a user changes the price or quantity. This ensures the values are recalculated dynamically.
+
+Initial Calculation: When the page loads, the updateTotals() function is automatically called to ensure the initial values are correct.
+
+Explanation:
+Subtotal Calculation: For each product, the subtotal is calculated as price * quantity, and the total order subtotal is updated.
+
+Total Payment Calculation: The total payment is the sum of the order subtotal, shipping, service fee, and discount.
+
+Now, when you change the price or quantity of the items, the subtotal and total payment will automatically update!
+
+
+sesuaikan kolom inputannya agar tidak terlalu kesamping kanan
+
+To ensure that the input fields are properly aligned and do not stretch too far to the right, we can add some styling adjustments. Specifically, we can set a maximum width for the input fields and ensure proper padding and margins. Here's the updated version of your HTML with adjustments to the input field sizes:
+
+
+
+Key Changes:
+Input Field Width:
+
+I've added max-width: 120px; to the input fields for better control over their size. This ensures they won't stretch too wide across the page.
+
+The width: 100% rule makes the input fields expand to fill their respective columns, but the max-width limits how wide they can go, preventing them from spilling over.
+
+Padding and Margin Adjustments:
+
+I've ensured consistent padding and margins for a more uniform look across all the input fields.
+
+Outcome:
+The input fields will be more compact and aligned better within their respective columns.
+
+The page will maintain a cleaner layout without the input fields extending too far to the right.
+
+
+TokoCartridge.Com ganti agar bisa di isi 
+
+To make the "TokoCartridge.Com" field editable (so users can fill it in), you can replace it with an input field, similar to the other fields. Here's how to modify the field:
+
+Updated HTML with Editable "Nama Penjual" (Seller Name):
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Receipt</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff5f00;
+            font-size: 2em;
+        }
+
+        .header, .order-details, .fees {
+            margin-bottom: 20px;
+        }
+
+        .header .title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .title img {
+            width: 50px;
+        }
+
+        .header .title h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .header .title .shopee-text {
+            color: #ff5f00;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .order-details, .fees {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .order-details table, .fees table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-details th, .order-details td, .fees th, .fees td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .order-details th, .fees th {
+            background-color: #f4f4f4;
+        }
+
+        .order-details td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .order-details input, .fees input {
+            width: 100%;
+            max-width: 120px; /* Limiting the input width */
+            padding: 6px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+
+        .totals {
+            font-weight: bold;
+            text-align: right;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .totals .total-amount {
+            color: #ff5f00;
+            font-size: 1.4em;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="title">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Shopee_logo_2021.svg/1200px-Shopee_logo_2021.svg.png" alt="Shopee Logo">
+            <h2 class="shopee-text">Nota Pesanan</h2>
+        </div>
+        <div>
+            <p><strong>Nama Pembeli:</strong> mbafirmansyah</p>
+            <p><strong>Nama Penjual:</strong> <input type="text" value="TokoCartridge.Com" id="sellerName" /></p>
+            <p><strong>Alamat Pembeli:</strong> Jl. Pemigaan Bar. No.12, RT.12/RW.1, Roa Malaka, Kota Jakarta Barat, DKI Jakarta</p>
+            <p><strong>No. Handphone Pembeli:</strong> 628788800575</p>
+        </div>
+    </div>
+
+    <!-- Order Details -->
+    <div class="order-details">
+        <h3 class="section-title">Rincian Pesanan</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Produk</th>
+                    <th>Harga Produk</th>
+                    <th>Kuantitas</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" value="Cartridge Toner HP W1107A M107A" /></td>
+                    <td><input type="number" value="109000" onchange="updateTotals()" /></td>
+                    <td><input type="number" value="8" onchange="updateTotals()" /></td>
+                    <td><input type="number" value="872000" readonly /></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" value="Cartridge Toner Brother TN B027" /></td>
+                    <td><input type="number" value="210000" onchange="updateTotals()" /></td>
+                    <td><input type="number" value="4" onchange="updateTotals()" /></td>
+                    <td><input type="number" value="840000" readonly /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Fees Section -->
+    <div class="fees">
+        <h3 class="section-title">Subtotal & Biaya Lainnya</h3>
+        <table>
+            <tr>
+                <th>Subtotal Pesanan</th>
+                <td><input type="number" id="orderSubtotal" value="1712000" readonly /></td>
+            </tr>
+            <tr>
+                <th>Subtotal Pengiriman</th>
+                <td><input type="number" value="12000" readonly /></td>
+            </tr>
+            <tr>
+                <th>Biaya Layanan</th>
+                <td><input type="number" value="3000" readonly /></td>
+            </tr>
+            <tr>
+                <th>Total Diskon Pengiriman</th>
+                <td><input type="number" value="-12000" readonly /></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Total Calculation -->
+    <div class="totals">
+        <p>Total Pembayaran: <span class="total-amount"><input type="number" id="totalPayment" value="1715000" readonly /></span></p>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <p>Biaya-biaya yang ditagihkan oleh Shopee (jika ada) sudah termasuk PPN</p>
     </div>
 </div>
 
 <script>
-    let itemCount = 0;
-    let totalAmount = 0;
-    let itemTotal = 0;
-    let serviceFee = parseInt(document.getElementById("serviceFee").value);
-    let shippingFee = parseInt(document.getElementById("shippingFee").value);
-    let discount = parseInt(document.getElementById("discount").value);
+    function updateTotals() {
+        let totalOrder = 0;
+        
+        // Get all the rows of the order details
+        let rows = document.querySelectorAll('.order-details tbody tr');
+        
+        rows.forEach((row, index) => {
+            let price = parseFloat(row.cells[2].querySelector('input').value);
+            let quantity = parseInt(row.cells[3].querySelector('input').value);
+            let subtotal = price * quantity;
+            
+            row.cells[4].querySelector('input').value = subtotal;
+            totalOrder += subtotal;
+        });
 
-    // Function to format numbers with thousand separator
-    function formatNumber(number) {
-        return number.toLocaleString('id-ID');
+        // Update the order subtotal
+        document.getElementById('orderSubtotal').value = totalOrder;
+
+        // Calculate total payment
+        let shipping = parseFloat(document.querySelector('.fees tr:nth-child(2) td input').value);
+        let serviceFee = parseFloat(document.querySelector('.fees tr:nth-child(3) td input').value);
+        let discount = parseFloat(document.querySelector('.fees tr:nth-child(4) td input').value);
+        let totalPayment = totalOrder + shipping + serviceFee + discount;
+        
+        document.getElementById('totalPayment').value = totalPayment;
     }
 
-    // Function to calculate total with fees and discount
-    function calculateTotal() {
-        const totalBeforeFees = itemTotal;
-        const subtotal = totalBeforeFees + serviceFee + shippingFee - discount;
-
-        document.getElementById("itemTotal").innerText = `Rp ${formatNumber(totalBeforeFees)}`;
-        document.getElementById("shippingFeeTotal").innerText = `Rp ${formatNumber(shippingFee)}`;
-        document.getElementById("serviceFeeTotal").innerText = `Rp ${formatNumber(serviceFee)}`;
-        document.getElementById("discountTotal").innerText = `Rp ${formatNumber(discount)}`;
-        document.getElementById("totalAmount").innerText = `Rp ${formatNumber(subtotal)}`;
-    }
-
-    // Function to add item to the table
-    function addItem() {
-        const product = document.getElementById("product").value;
-        const price = parseFloat(document.getElementById("price").value);
-        const quantity = parseInt(document.getElementById("quantity").value);
-
-        if (!product || isNaN(price) || isNaN(quantity) || quantity <= 0 || price <= 0) {
-            alert("Please fill in all fields with valid data.");
-            return;
-        }
-
-        itemCount++;
-        const subtotal = price * quantity;
-        itemTotal += subtotal;
-
-        const table = document.getElementById("orderTable");
-        const row = table.insertRow();
-        row.innerHTML = `
-            <td>${itemCount}</td>
-            <td>${product}</td>
-            <td>Rp ${formatNumber(price)}</td>
-            <td>${quantity}</td>
-            <td>Rp ${formatNumber(subtotal)}</td>
-        `;
-
-        // Recalculate total with service fee, shipping, and discount
-        calculateTotal();
-
-        // Clear input fields
-        document.getElementById("product").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("quantity").value = "";
-    }
-
-    // Event listeners to update total if any fee or discount changes
-    document.getElementById("serviceFee").addEventListener("input", function() {
-        serviceFee = parseInt(this.value);
-        calculateTotal();
-    });
-
-    document.getElementById("shippingFee").addEventListener("input", function() {
-        shippingFee = parseInt(this.value);
-        calculateTotal();
-    });
-
-    document.getElementById("discount").addEventListener("input", function() {
-        discount = parseInt(this.value);
-        calculateTotal();
-    });
-
-    // Add event listener for Enter key to trigger addItem function
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            addItem();
-        }
-    });
+    // Run the initial calculation on page load
+    window.onload = updateTotals;
 </script>
 
 </body>
 </html>
+Key Change:
+Nama Penjual Editable: I replaced the "TokoCartridge.Com" text with an input field (<input type="text" value="TokoCartridge.Com" id="sellerName" />). This allows the user to edit the seller's name directly.
+
+Outcome:
+Now, users can modify the "Nama Penjual" field by typing into the input box. The rest of the receipt will remain the same, and other fields will continue to function as intended.
+
+
+
+
