@@ -1,271 +1,3 @@
-
-
-
-
-buat agar itemnya bisa di ubah seperti nama barang harga dan kuantiti
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Receipt</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #ff5f00;
-            font-size: 2em;
-        }
-
-        .header, .order-details, .fees {
-            margin-bottom: 20px;
-        }
-
-        .header .title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header .title img {
-            width: 50px;
-        }
-
-        .header .title h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .header .title .shopee-text {
-            color: #ff5f00;
-            font-weight: bold;
-        }
-
-        .section-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-
-        .order-details, .fees {
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-
-        .order-details table, .fees table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .order-details th, .order-details td, .fees th, .fees td {
-            padding: 8px;
-            text-align: left;
-        }
-
-        .order-details th, .fees th {
-            background-color: #f4f4f4;
-        }
-
-        .order-details td {
-            border-bottom: 1px solid #ddd;
-        }
-
-        .totals {
-            font-weight: bold;
-            text-align: right;
-            font-size: 1.2em;
-            margin-top: 10px;
-        }
-
-        .totals .total-amount {
-            color: #ff5f00;
-            font-size: 1.4em;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 30px;
-        }
-
-        .footer p {
-            margin: 0;
-        }
-
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <!-- Header Section -->
-    <div class="header">
-        <div class="title">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Shopee_logo_2021.svg/1200px-Shopee_logo_2021.svg.png" alt="Shopee Logo">
-            <h2 class="shopee-text">Nota Pesanan</h2>
-        </div>
-        <div>
-            <p><strong>Nama Pembeli:</strong> mbafirmansyah</p>
-            <p><strong>Nama Penjual:</strong> TokoCartridge.Com</p>
-            <p><strong>Alamat Pembeli:</strong> Jl. Pemigaan Bar. No.12, RT.12/RW.1, Roa Malaka, Kota Jakarta Barat, DKI Jakarta</p>
-            <p><strong>No. Handphone Pembeli:</strong> 628788800575</p>
-        </div>
-    </div>
-
-    <!-- Order Details -->
-    <div class="order-details">
-        <h3 class="section-title">Rincian Pesanan</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Produk</th>
-                    <th>Harga Produk</th>
-                    <th>Kuantitas</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Cartridge Toner HP W1107A M107A</td>
-                    <td>Rp109.000</td>
-                    <td>8</td>
-                    <td>Rp872.000</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Cartridge Toner Brother TN B027</td>
-                    <td>Rp210.000</td>
-                    <td>4</td>
-                    <td>Rp840.000</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Fees Section -->
-    <div class="fees">
-        <h3 class="section-title">Subtotal & Biaya Lainnya</h3>
-        <table>
-            <tr>
-                <th>Subtotal Pesanan</th>
-                <td>Rp1.712.000</td>
-            </tr>
-            <tr>
-                <th>Subtotal Pengiriman</th>
-                <td>Rp12.000</td>
-            </tr>
-            <tr>
-                <th>Biaya Layanan</th>
-                <td>Rp3.000</td>
-            </tr>
-            <tr>
-                <th>Total Diskon Pengiriman</th>
-                <td>-Rp12.000</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Total Calculation -->
-    <div class="totals">
-        <p>Total Pembayaran: <span class="total-amount">Rp1.715.000</span></p>
-    </div>
-
-    <!-- Footer Section -->
-    <div class="footer">
-        <p>Biaya-biaya yang ditagihkan oleh Shopee (jika ada) sudah termasuk PPN</p>
-    </div>
-</div>
-
-</body>
-</html>
-
-To allow for editable fields such as product name, price, and quantity in the order receipt, you can replace the static values inside the table with HTML form input elements (such as text inputs and number inputs). This will allow users to modify the values directly on the page.
-
-Here is an updated version of your code that includes editable fields:
-
-
-
-Key Changes:
-Editable Fields:
-
-The product name, price, and quantity are now inside <input> elements that can be edited. For prices and quantities, I've used type="number" to ensure only numeric input is accepted.
-
-Readonly for Subtotal & Total:
-
-The "Subtotal" and "Total Pembayaran" fields are set to readonly, so users cannot modify them directly. However, they will need to be updated based on changes to the price and quantity, which could be handled with JavaScript.
-
-If you want to dynamically calculate the subtotal and total when a user changes the quantity or price, you'd need to add some JavaScript to automatically update those values based on the changes made. Would you like help with that as well?
-
-
-tolong jalankan perhitungannya juga
-
-To make the order receipt dynamically update the subtotal and total when you change the price or quantity, we can add JavaScript to perform the calculations.
-
-Here's the updated HTML with JavaScript added for calculating the subtotal and total:
-
-
-
-Key Additions:
-JavaScript updateTotals(): This function calculates the subtotal for each product, then updates the overall order subtotal and total payment based on the user's changes to quantity or price.
-
-Event Listeners: Each input field for price and quantity has an onchange attribute, which calls the updateTotals() function whenever a user changes the price or quantity. This ensures the values are recalculated dynamically.
-
-Initial Calculation: When the page loads, the updateTotals() function is automatically called to ensure the initial values are correct.
-
-Explanation:
-Subtotal Calculation: For each product, the subtotal is calculated as price * quantity, and the total order subtotal is updated.
-
-Total Payment Calculation: The total payment is the sum of the order subtotal, shipping, service fee, and discount.
-
-Now, when you change the price or quantity of the items, the subtotal and total payment will automatically update!
-
-
-sesuaikan kolom inputannya agar tidak terlalu kesamping kanan
-
-To ensure that the input fields are properly aligned and do not stretch too far to the right, we can add some styling adjustments. Specifically, we can set a maximum width for the input fields and ensure proper padding and margins. Here's the updated version of your HTML with adjustments to the input field sizes:
-
-
-
-Key Changes:
-Input Field Width:
-
-I've added max-width: 120px; to the input fields for better control over their size. This ensures they won't stretch too wide across the page.
-
-The width: 100% rule makes the input fields expand to fill their respective columns, but the max-width limits how wide they can go, preventing them from spilling over.
-
-Padding and Margin Adjustments:
-
-I've ensured consistent padding and margins for a more uniform look across all the input fields.
-
-Outcome:
-The input fields will be more compact and aligned better within their respective columns.
-
-The page will maintain a cleaner layout without the input fields extending too far to the right.
-
-
-TokoCartridge.Com ganti agar bisa di isi 
-
-To make the "TokoCartridge.Com" field editable (so users can fill it in), you can replace it with an input field, similar to the other fields. Here's how to modify the field:
-
-Updated HTML with Editable "Nama Penjual" (Seller Name):
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -379,6 +111,21 @@ Updated HTML with Editable "Nama Penjual" (Seller Name):
             margin: 0;
         }
 
+        /* Add styles for the add item button */
+        .add-item-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ff5f00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-item-button:hover {
+            background-color: #e64a19;
+        }
+
     </style>
 </head>
 <body>
@@ -401,7 +148,7 @@ Updated HTML with Editable "Nama Penjual" (Seller Name):
     <!-- Order Details -->
     <div class="order-details">
         <h3 class="section-title">Rincian Pesanan</h3>
-        <table>
+        <table id="orderTable">
             <thead>
                 <tr>
                     <th>No</th>
@@ -428,6 +175,9 @@ Updated HTML with Editable "Nama Penjual" (Seller Name):
                 </tr>
             </tbody>
         </table>
+
+        <!-- Button to add new item -->
+        <button class="add-item-button" onclick="addNewItem()">+ Tambah Rincian Pesanan</button>
     </div>
 
     <!-- Fees Section -->
@@ -492,18 +242,32 @@ Updated HTML with Editable "Nama Penjual" (Seller Name):
         document.getElementById('totalPayment').value = totalPayment;
     }
 
+    function addNewItem() {
+        // Get the table body and the current number of rows
+        const tableBody = document.querySelector("#orderTable tbody");
+        const rowCount = tableBody.rows.length + 1;
+
+        // Create a new row with inputs
+        const newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td>${rowCount}</td>
+            <td><input type="text" value="Produk Baru" /></td>
+            <td><input type="number" value="0" onchange="updateTotals()" /></td>
+            <td><input type="number" value="1" onchange="updateTotals()" /></td>
+            <td><input type="number" value="0" readonly /></td>
+        `;
+
+        // Append the new row to the table
+        tableBody.appendChild(newRow);
+
+        // Update the totals after adding a new item
+        updateTotals();
+    }
+
     // Run the initial calculation on page load
     window.onload = updateTotals;
 </script>
 
 </body>
 </html>
-Key Change:
-Nama Penjual Editable: I replaced the "TokoCartridge.Com" text with an input field (<input type="text" value="TokoCartridge.Com" id="sellerName" />). This allows the user to edit the seller's name directly.
-
-Outcome:
-Now, users can modify the "Nama Penjual" field by typing into the input box. The rest of the receipt will remain the same, and other fields will continue to function as intended.
-
-
-
-
