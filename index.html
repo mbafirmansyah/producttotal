@@ -167,10 +167,12 @@
     let shippingFee = parseInt(document.getElementById("shippingFee").value);
     let discount = parseInt(document.getElementById("discount").value);
 
+    // Function to format numbers with thousand separator
     function formatNumber(number) {
         return number.toLocaleString('id-ID');
     }
 
+    // Function to calculate total with fees and discount
     function calculateTotal() {
         const totalBeforeFees = itemTotal;
         const subtotal = totalBeforeFees + serviceFee + shippingFee - discount;
@@ -182,6 +184,7 @@
         document.getElementById("totalAmount").innerText = `Rp ${formatNumber(subtotal)}`;
     }
 
+    // Function to add item to the table
     function addItem() {
         const product = document.getElementById("product").value;
         const price = parseFloat(document.getElementById("price").value);
@@ -206,13 +209,16 @@
             <td>Rp ${formatNumber(subtotal)}</td>
         `;
 
+        // Recalculate total with service fee, shipping, and discount
         calculateTotal();
 
+        // Clear input fields
         document.getElementById("product").value = "";
         document.getElementById("price").value = "";
         document.getElementById("quantity").value = "";
     }
 
+    // Event listeners to update total if any fee or discount changes
     document.getElementById("serviceFee").addEventListener("input", function() {
         serviceFee = parseInt(this.value);
         calculateTotal();
@@ -226,6 +232,13 @@
     document.getElementById("discount").addEventListener("input", function() {
         discount = parseInt(this.value);
         calculateTotal();
+    });
+
+    // Add event listener for Enter key to trigger addItem function
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            addItem();
+        }
     });
 </script>
 
