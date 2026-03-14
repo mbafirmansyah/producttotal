@@ -1,276 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Receipt</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nota Pesanan - Shopee</title>
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+    .page { max-width: 750px; margin: 20px auto; background: #fff; padding: 30px 35px 40px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
-        h1 {
-            text-align: center;
-            color: #ff5f00;
-            font-size: 2em;
-        }
+    /* Shopee Header */
+    .shopee-header { text-align: center; margin-bottom: 18px; }
+    .shopee-logo { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .shopee-icon { width: 48px; height: 48px; background: #ee4d2d; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .shopee-icon svg { width: 30px; height: 30px; }
+    .shopee-text { font-size: 38px; font-weight: 700; color: #ee4d2d; letter-spacing: -0.5px; }
 
-        .header, .order-details, .fees {
-            margin-bottom: 20px;
-        }
+    /* Section Title */
+    .section-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: #222; }
 
-        .header .title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Info Box */
+    .info-box { border: 1px solid #ccc; padding: 14px 16px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.7; }
+    .info-box .row { display: flex; justify-content: space-between; flex-wrap: wrap; }
+    .info-box .label { font-weight: 700; }
+    .info-box .address { margin-top: 2px; }
 
-        .header .title img {
-            width: 50px;
-        }
+    /* Order Meta */
+    .order-meta { display: flex; border: 1px solid #ccc; margin-bottom: 20px; font-size: 13.5px; }
+    .order-meta .col { flex: 1; padding: 10px 14px; }
+    .order-meta .col:not(:last-child) { border-right: 1px solid #ccc; }
+    .order-meta .col-header { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+    .order-meta .col-value { font-size: 13px; }
 
-        .header .title h2 {
-            margin: 0;
-            color: #333;
-        }
+    /* Items Table */
+    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 13px; }
+    .items-table th { background: #f7f7f7; border: 1px solid #ccc; padding: 8px 10px; text-align: left; font-weight: 600; font-size: 12.5px; }
+    .items-table td { border: 1px solid #ccc; padding: 6px 8px; vertical-align: middle; }
+    .items-table td.num { text-align: center; }
+    .items-table td.price { text-align: right; white-space: nowrap; font-weight: 500; }
 
-        .header .title .shopee-text {
-            color: #ff5f00;
-            font-weight: bold;
-        }
+    /* Editable Inputs */
+    .edit-input { width: 100%; border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 13px; padding: 5px 6px; border-radius: 4px; color: #333; outline: none; transition: border-color 0.2s, background 0.2s; }
+    .edit-input:hover { border-color: #ddd; background: #fafafa; }
+    .edit-input:focus { border-color: #ee4d2d; background: #fff4f0; box-shadow: 0 0 0 2px rgba(238,77,45,0.1); }
+    .edit-input.input-name { min-width: 180px; }
+    .edit-input.input-price, .edit-input.input-qty { text-align: right; width: 90px; }
+    .edit-input.input-qty { width: 60px; text-align: center; }
+    .edit-input.invalid { border-color: #e74c3c; background: #fef0ef; }
+    .validation-msg { font-size: 10px; color: #e74c3c; margin-top: 2px; display: none; }
+    .validation-msg.show { display: block; }
 
-        .section-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
+    /* Row Actions */
+    .btn-action { border: none; cursor: pointer; border-radius: 4px; font-size: 16px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s, transform 0.1s; }
+    .btn-action:active { transform: scale(0.92); }
+    .btn-add { background: #ee4d2d; color: #fff; }
+    .btn-add:hover { background: #d94425; }
+    .btn-del { background: #f0f0f0; color: #999; }
+    .btn-del:hover { background: #fee; color: #e74c3c; }
+    .table-actions { display: flex; justify-content: flex-start; margin-bottom: 14px; gap: 8px; align-items: center; }
+    .btn-add-row { display: inline-flex; align-items: center; gap: 5px; background: #ee4d2d; color: #fff; border: none; border-radius: 5px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-add-row:hover { background: #d94425; }
 
-        .order-details, .fees {
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
+    /* Payment editable inputs */
+    .input-pay { width: 110px; text-align: right; border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 13px; padding: 4px 6px; border-radius: 4px; color: #333; outline: none; transition: border-color 0.2s, background 0.2s; }
+    .input-pay:hover { border-color: #ddd; background: #fff; }
+    .input-pay:focus { border-color: #ee4d2d; background: #fff4f0; box-shadow: 0 0 0 2px rgba(238,77,45,0.1); }
+    .input-pay::before { content: 'Rp'; }
+    .input-discount { color: #e74c3c; }
 
-        .order-details table, .fees table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    /* Subtotal Row */
+    .subtotal-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 30px; font-size: 15px; margin-bottom: 3px; margin-top: 6px; }
+    .subtotal-row .label { font-weight: 700; }
+    .subtotal-row .value { font-weight: 700; }
+    .total-qty { text-align: right; font-size: 12px; font-weight: 700; color: #333; margin-bottom: 24px; }
 
-        .order-details th, .order-details td, .fees th, .fees td {
-            padding: 8px;
-            text-align: left;
-        }
+    /* Payment Summary Box */
+    .payment-box { background: #f5f5f5; border: 1px solid #ddd; border-radius: 2px; padding: 20px 28px 22px; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 13.5px; }
+    .payment-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+    .payment-row .plabel { color: #333; font-weight: 400; font-size: 13px; }
+    .payment-row .pvalue { font-weight: 500; text-align: right; font-size: 13px; color: #333; }
+    .payment-row.discount .pvalue { color: #333; }
+    .payment-divider { border: none; border-top: 1px solid #ccc; margin: 10px 0 8px; }
+    .payment-total { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; }
+    .payment-total .plabel { font-weight: 700; font-size: 15px; color: #222; }
+    .payment-total .pvalue { font-weight: 700; font-size: 24px; color: #ee4d2d; letter-spacing: -0.3px; }
 
-        .order-details th, .fees th {
-            background-color: #f4f4f4;
-        }
+    /* Footer Note */
+    .footer-note { text-align: center; font-size: 11.5px; color: #888; margin-top: 18px; line-height: 1.6; }
 
-        .order-details td {
-            border-bottom: 1px solid #ddd;
-        }
-
-        .order-details input, .fees input {
-            width: 100%;
-            max-width: 120px; /* Limiting the input width */
-            padding: 6px;
-            margin: 4px 0;
-            box-sizing: border-box;
-        }
-
-        .totals {
-            font-weight: bold;
-            text-align: right;
-            font-size: 1.2em;
-            margin-top: 10px;
-        }
-
-        .totals .total-amount {
-            color: #ff5f00;
-            font-size: 1.4em;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 30px;
-        }
-
-        .footer p {
-            margin: 0;
-        }
-
-        /* Add styles for the add item button */
-        .add-item-button {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #ff5f00;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .add-item-button:hover {
-            background-color: #e64a19;
-        }
-
-    </style>
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .page { box-shadow: none; margin: 0; padding: 20px; }
+    }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <!-- Header Section -->
-    <div class="header">
-        <div class="title">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/960px-Shopee.svg.png" alt="Shopee Logo">
-            <h2 class="shopee-text">Nota Pesanan</h2>
+  <div class="page">
+    <!-- Shopee Logo -->
+    <div class="shopee-header">
+      <div class="shopee-logo">
+        <div class="shopee-icon">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <text x="50" y="72" text-anchor="middle" font-size="65" font-weight="bold" fill="#fff" font-family="Arial">S</text>
+          </svg>
         </div>
-        <div>
-            <p><strong>Nama Pembeli:</strong> mbafirmansyah</p>
-            <p><strong>Nama Penjual:</strong> <input type="text" id="sellerName" /></p>
-            <p><strong>Alamat Pembeli:</strong> Jl. Perniagaan Bar. No.12, RT.12/RW.1, Roa Malaka, Kota Jakarta Barat, DKI Jakarta</p>
-            <p><strong>No. Handphone Pembeli:</strong> 628788800575</p>
-        </div>
+        <span class="shopee-text">Shopee</span>
+      </div>
     </div>
 
-    <!-- Order Details -->
-    <div class="order-details">
-        <h3 class="section-title">Rincian Pesanan</h3>
-        <table id="orderTable">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Produk</th>
-                    <th>Harga Produk</th>
-                    <th>Kuantitas</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td><input type="text" /></td>
-                    <td><input type="number" onchange="updateTotals()" /></td>
-                    <td><input type="number" onchange="updateTotals()" /></td>
-                    <td><input type="number" readonly /></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td><input type="text" /></td>
-                    <td><input type="number" onchange="updateTotals()" /></td>
-                    <td><input type="number" onchange="updateTotals()" /></td>
-                    <td><input type="number" readonly /></td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Nota Pesanan -->
+    <div class="section-title">Nota Pesanan</div>
 
-        <!-- Button to add new item -->
-        <button class="add-item-button" onclick="addNewItem()">+ Tambah Rincian Pesanan</button>
+    <!-- Buyer & Seller Info -->
+    <div class="info-box">
+      <div class="row">
+        <div><span class="label">Nama Pembeli:</span> mbafirmansyah</div>
+        <div><span class="label">Nama Penjual:</span> TokoCartridge.Com</div>
+      </div>
+      <div class="address">
+        <span class="label">Alamat Pembeli:</span><br>
+        Jl. Perniagaan Bar. No.12, RT.12/RW.1, Roa Malaka (Asia Paramita Indah), KOTA JAKARTA BARAT, TAMBORA, DKI JAKARTA, ID, 11240
+      </div>
+      <div style="margin-top:4px;">
+        <span class="label">No. Handphone Pembeli:</span> 6287888000575
+      </div>
     </div>
 
-    <!-- Fees Section -->
-    <div class="fees">
-        <h3 class="section-title">Subtotal & Biaya Lainnya</h3>
-        <table>
-            <tr>
-                <th>Subtotal Pesanan</th>
-                <td><input type="number" id="orderSubtotal" value="0" readonly /></td>
-            </tr>
-            <tr>
-                <th>Subtotal Pengiriman</th>
-                <td><input type="number" value="12000" onchange="updateTotals()" /></td>
-            </tr>
-            <tr>
-                <th>Biaya Layanan</th>
-                <td><input type="number" value="3000" onchange="updateTotals()" /></td>
-            </tr>
-            <tr>
-                <th>Total Diskon Pengiriman</th>
-                <td><input type="number" value="-12000" onchange="updateTotals()" /></td>
-            </tr>
-        </table>
+    <!-- Order Meta -->
+    <div class="order-meta">
+      <div class="col">
+        <div class="col-header">No. Pesanan</div>
+        <div class="col-value">260309EYTO23BA</div>
+      </div>
+      <div class="col">
+        <div class="col-header">Tanggal Transaksi</div>
+        <div class="col-value">09/03/26</div>
+      </div>
+      <div class="col">
+        <div class="col-header">Metode Pembayaran</div>
+        <div class="col-value">Bank BCA</div>
+      </div>
+      <div class="col">
+        <div class="col-header">Jasa Kirim</div>
+        <div class="col-value">Regular</div>
+      </div>
     </div>
 
-    <!-- Total Calculation -->
-    <div class="totals">
-        <p>Total Pembayaran: <span class="total-amount"><input type="number" id="totalPayment" value="0" readonly /></span></p>
+    <!-- Rincian Pesanan -->
+    <div class="section-title">Rincian Pesanan</div>
+    <table class="items-table" id="itemsTable">
+      <thead>
+        <tr>
+          <th style="width:36px;">No.</th>
+          <th>Produk</th>
+          <th style="width:110px;">Harga Produk</th>
+          <th style="width:80px;">Kuantitas</th>
+          <th style="width:110px;">Subtotal</th>
+          <th style="width:40px;"></th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody"></tbody>
+    </table>
+    <div class="table-actions">
+      <button class="btn-add-row" onclick="addRow()">+ Tambah Produk</button>
     </div>
 
-    <!-- Footer Section -->
-    <div class="footer">
-        <p>Biaya-biaya yang ditagihkan oleh Shopee (jika ada) sudah termasuk PPN</p>
+    <!-- Subtotal -->
+    <div class="subtotal-row">
+      <span class="label">Subtotal</span>
+      <span class="value" id="grandSubtotal">Rp0</span>
     </div>
-</div>
+    <div class="total-qty">Total Kuantitas (Aktif) <span id="totalQty">0</span> produk</div>
 
-<script>
-    function updateTotals() {
-        let totalOrder = 0;
-        
-        // Get all the rows of the order details
-        let rows = document.querySelectorAll('.order-details tbody tr');
-        
-        rows.forEach((row, index) => {
-            let price = parseFloat(row.cells[2].querySelector('input').value) || 0;
-            let quantity = parseInt(row.cells[3].querySelector('input').value) || 0;
-            let subtotal = price * quantity;
-            
-            row.cells[4].querySelector('input').value = subtotal;
-            totalOrder += subtotal;
-        });
+    <!-- Payment Summary -->
+    <div class="payment-box">
+      <div class="payment-row">
+        <span class="plabel">Subtotal Pesanan</span>
+        <span class="pvalue" id="paySubtotal">Rp0</span>
+      </div>
+      <div class="payment-row">
+        <span class="plabel">Subtotal Pengiriman</span>
+        <span class="pvalue"><input class="edit-input input-pay" id="inputShipping" type="text" value="12.000" inputmode="numeric"></span>
+      </div>
+      <div class="payment-row">
+        <span class="plabel">Biaya Layanan</span>
+        <span class="pvalue"><input class="edit-input input-pay" id="inputService" type="text" value="3.000" inputmode="numeric"></span>
+      </div>
+      <div class="payment-row discount">
+        <span class="plabel">Total Diskon Pengiriman</span>
+        <span class="pvalue"><input class="edit-input input-pay input-discount" id="inputDiscount" type="text" value="12.000" inputmode="numeric"></span>
+      </div>
+      <hr class="payment-divider">
+      <div class="payment-total">
+        <span class="plabel">Total Pembayaran</span>
+        <span class="pvalue" id="payTotal">Rp0</span>
+      </div>
+    </div>
 
-        // Update the order subtotal
-        document.getElementById('orderSubtotal').value = totalOrder;
+    <!-- Footer -->
+    <div class="footer-note">
+      Biaya-biaya yang ditagihkan oleh Shopee (jika<br>ada) sudah termasuk PPN
+    </div>
+  </div>
 
-        // Get values from editable fee fields
-        let shipping = parseFloat(document.querySelector('.fees tr:nth-child(2) td input').value);
-        let serviceFee = parseFloat(document.querySelector('.fees tr:nth-child(3) td input').value);
-        let discount = parseFloat(document.querySelector('.fees tr:nth-child(4) td input').value);
+  <script>
+    const initialItems = [
+      { name: 'Cartridge Toner Laserjet HP W1107A M107A 107A 107W 105A106A Compatible Plus Chip', price: 109000, qty: 8 },
+      { name: 'Cartridge Toner Brother TN B027 TNB027 Black Printer MFC-B7810DW HL-B2180DW DCP-B7640DW', price: 210000, qty: 4 }
+    ];
 
-        // Calculate total payment
-        let totalPayment = totalOrder + shipping + serviceFee + discount;
-        
-        document.getElementById('totalPayment').value = totalPayment;
+    function formatRp(n) {
+      if (isNaN(n) || n === 0) return 'Rp0';
+      return 'Rp' + n.toLocaleString('id-ID');
     }
 
-    function addNewItem() {
-        // Get the table body and the current number of rows
-        const tableBody = document.querySelector("#orderTable tbody");
-        const rowCount = tableBody.rows.length + 1;
-
-        // Create a new row with inputs
-        const newRow = document.createElement('tr');
-
-        newRow.innerHTML = `
-            <td>${rowCount}</td>
-            <td><input type="text" /></td>
-            <td><input type="number" onchange="updateTotals()" /></td>
-            <td><input type="number" onchange="updateTotals()" /></td>
-            <td><input type="number" readonly /></td>
-        `;
-
-        // Append the new row to the table
-        tableBody.appendChild(newRow);
-
-        // Update the totals after adding a new item
-        updateTotals();
+    function formatRpSigned(n) {
+      if (isNaN(n) || n === 0) return '-Rp0';
+      return '-Rp' + n.toLocaleString('id-ID');
     }
 
-    // Run the initial calculation on page load
-    window.onload = updateTotals;
-</script>
+    function parseNumber(str) {
+      var s = String(str).replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
+      return s === '' ? NaN : parseInt(s, 10);
+    }
 
+    function validate(input, type) {
+      var val = input.value.trim();
+      var msgEl = input.parentElement.querySelector('.validation-msg');
+      var isValid = true;
+      var msg = '';
+
+      if (type === 'name') {
+        if (val === '') { isValid = false; msg = 'Nama produk wajib diisi'; }
+      } else if (type === 'price') {
+        var num = parseNumber(val);
+        if (val === '') { isValid = false; msg = 'Harga wajib diisi'; }
+        else if (isNaN(num) || num < 0) { isValid = false; msg = 'Harga tidak valid'; }
+      } else if (type === 'qty') {
+        var num = parseNumber(val);
+        if (val === '') { isValid = false; msg = 'Kuantitas wajib diisi'; }
+        else if (isNaN(num) || num < 1) { isValid = false; msg = 'Min. 1'; }
+      }
+
+      input.classList.toggle('invalid', !isValid);
+      if (msgEl) {
+        msgEl.textContent = msg;
+        msgEl.classList.toggle('show', !isValid);
+      }
+      return isValid;
+    }
+
+    function recalculate() {
+      var rows = document.querySelectorAll('#itemsBody tr');
+      var grandTotal = 0;
+      var totalQty = 0;
+
+      rows.forEach(function(row) {
+        var priceInput = row.querySelector('.input-price');
+        var qtyInput = row.querySelector('.input-qty');
+        var subtotalCell = row.querySelector('.row-subtotal');
+        var price = parseNumber(priceInput.value);
+        var qty = parseNumber(qtyInput.value);
+
+        if (!isNaN(price) && !isNaN(qty) && qty >= 1 && price >= 0) {
+          var sub = price * qty;
+          subtotalCell.textContent = formatRp(sub);
+          grandTotal += sub;
+          totalQty += qty;
+        } else {
+          subtotalCell.textContent = '-';
+        }
+      });
+
+      document.getElementById('grandSubtotal').textContent = formatRp(grandTotal);
+      document.getElementById('totalQty').textContent = totalQty;
+      document.getElementById('paySubtotal').textContent = formatRp(grandTotal);
+
+      var shipping = parseNumber(document.getElementById('inputShipping').value) || 0;
+      var service = parseNumber(document.getElementById('inputService').value) || 0;
+      var discount = parseNumber(document.getElementById('inputDiscount').value) || 0;
+      var total = grandTotal + shipping + service - discount;
+      document.getElementById('payTotal').textContent = formatRp(total);
+    }
+
+    function renumberRows() {
+      var rows = document.querySelectorAll('#itemsBody tr');
+      rows.forEach(function(row, i) {
+        row.querySelector('.row-num').textContent = i + 1;
+      });
+    }
+
+    function createRow(item) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="num"><span class="row-num"></span></td>' +
+        '<td><input class="edit-input input-name" type="text" value="" placeholder="Nama produk..."><div class="validation-msg"></div></td>' +
+        '<td><input class="edit-input input-price" type="text" value="" placeholder="0" inputmode="numeric"><div class="validation-msg"></div></td>' +
+        '<td><input class="edit-input input-qty" type="text" value="" placeholder="1" inputmode="numeric"><div class="validation-msg"></div></td>' +
+        '<td class="price row-subtotal">-</td>' +
+        '<td class="num"><button class="btn-action btn-del" title="Hapus baris" onclick="deleteRow(this)">&times;</button></td>';
+
+      var nameInput = tr.querySelector('.input-name');
+      var priceInput = tr.querySelector('.input-price');
+      var qtyInput = tr.querySelector('.input-qty');
+
+      if (item) {
+        nameInput.value = item.name;
+        priceInput.value = item.price.toLocaleString('id-ID');
+        qtyInput.value = item.qty;
+      }
+
+      nameInput.addEventListener('input', function() { validate(this, 'name'); });
+      priceInput.addEventListener('input', function() {
+        validate(this, 'price');
+        recalculate();
+      });
+      priceInput.addEventListener('blur', function() {
+        var num = parseNumber(this.value);
+        if (!isNaN(num)) this.value = num.toLocaleString('id-ID');
+      });
+      qtyInput.addEventListener('input', function() {
+        validate(this, 'qty');
+        recalculate();
+      });
+      qtyInput.addEventListener('blur', function() {
+        var num = parseNumber(this.value);
+        if (!isNaN(num) && num >= 1) this.value = num;
+      });
+
+      return tr;
+    }
+
+    function addRow(item) {
+      var tbody = document.getElementById('itemsBody');
+      var tr = createRow(item || null);
+      tbody.appendChild(tr);
+      renumberRows();
+      recalculate();
+      if (!item) tr.querySelector('.input-name').focus();
+    }
+
+    function deleteRow(btn) {
+      var tbody = document.getElementById('itemsBody');
+      if (tbody.rows.length <= 1) return;
+      btn.closest('tr').remove();
+      renumberRows();
+      recalculate();
+    }
+
+    // Initialize
+    initialItems.forEach(function(item) { addRow(item); });
+
+    // Payment input listeners
+    ['inputShipping', 'inputService', 'inputDiscount'].forEach(function(id) {
+      var el = document.getElementById(id);
+      el.addEventListener('input', function() { recalculate(); });
+      el.addEventListener('blur', function() {
+        var num = parseNumber(this.value);
+        if (!isNaN(num)) this.value = num.toLocaleString('id-ID');
+      });
+    });
+  </script>
 </body>
 </html>
-
