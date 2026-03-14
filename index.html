@@ -10,6 +10,34 @@
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
     .page { max-width: 750px; margin: 20px auto; background: #fff; padding: 30px 35px 40px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
+    /* ===== SAVE AS PDF BUTTON (screen only) ===== */
+    .pdf-bar {
+      max-width: 750px;
+      margin: 16px auto 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 4px;
+    }
+    .btn-save-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ee4d2d;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(238,77,45,0.35);
+      transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
+      letter-spacing: 0.2px;
+    }
+    .btn-save-pdf:hover { background: #d94425; box-shadow: 0 4px 14px rgba(238,77,45,0.4); }
+    .btn-save-pdf:active { transform: scale(0.97); }
+    .btn-save-pdf svg { width: 18px; height: 18px; flex-shrink: 0; }
+
     /* Shopee Header */
     .shopee-header { text-align: center; margin-bottom: 18px; }
     .shopee-logo { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
@@ -66,7 +94,6 @@
     .input-pay { width: 110px; text-align: right; border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 13px; padding: 4px 6px; border-radius: 4px; color: #333; outline: none; transition: border-color 0.2s, background 0.2s; }
     .input-pay:hover { border-color: #ddd; background: #fff; }
     .input-pay:focus { border-color: #ee4d2d; background: #fff4f0; box-shadow: 0 0 0 2px rgba(238,77,45,0.1); }
-    .input-pay::before { content: 'Rp'; }
     .input-discount { color: #e74c3c; }
 
     /* Subtotal Row */
@@ -89,7 +116,7 @@
     /* Footer Note */
     .footer-note { text-align: right; font-size: 11.5px; color: #888; margin-top: 18px; line-height: 1.6; }
 
-    /* Order meta editable inputs - blend seamlessly */
+    /* Order meta editable inputs */
     .meta-input { border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 13px; padding: 2px 4px; border-radius: 4px; color: #333; outline: none; transition: border-color 0.2s, background 0.2s; width: 100%; }
     .meta-input:hover { border-color: #ddd; background: #fafafa; }
     .meta-input:focus { border-color: #ee4d2d; background: #fff4f0; box-shadow: 0 0 0 2px rgba(238,77,45,0.1); }
@@ -152,6 +179,8 @@
       .btn-action { width: 32px; height: 32px; font-size: 18px; }
       .btn-add-row { padding: 9px 16px; font-size: 13px; }
       .footer-note { font-size: 10.5px; margin-top: 14px; text-align: center; }
+      .pdf-bar { margin: 10px auto 0; padding: 0 12px; }
+      .btn-save-pdf { width: 100%; justify-content: center; }
     }
     @media (max-width: 360px) {
       .page { padding: 10px 8px 18px; }
@@ -160,15 +189,92 @@
       .order-meta .col:last-child { border-bottom: none; }
       .payment-total .pvalue { font-size: 16px; }
     }
+
+    /* ===== PRINT / SAVE AS PDF STYLES ===== */
     @media print {
-      body { background: #fff; }
-      .page { box-shadow: none; margin: 0; padding: 20px; }
-      .btn-random { display: none; }
+      /* Hide all interactive UI elements */
+      .pdf-bar,
+      .btn-save-pdf,
+      .btn-random,
+      .btn-add-row,
+      .table-actions,
+      .btn-action,
+      .btn-del { display: none !important; }
+
+      /* Reset page chrome */
+      html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+      .page {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 18px 24px 24px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+
+      /* Render inputs as plain text */
+      input.edit-input,
+      input.meta-input,
+      input.input-pay {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        -webkit-appearance: none;
+        appearance: none;
+        padding: 0 !important;
+        color: #333 !important;
+        pointer-events: none;
+      }
+      input.edit-input:focus,
+      input.meta-input:focus,
+      input.input-pay:focus {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      /* Ensure table renders cleanly across pages */
+      .items-table { page-break-inside: auto; }
+      .items-table tr { page-break-inside: avoid; page-break-after: auto; }
+      .items-table thead { display: table-header-group; }
+
+      /* Payment box on same page if possible */
+      .payment-box { page-break-inside: avoid; }
+
+      /* Hide the delete column header & cells */
+      .items-table th:last-child,
+      .items-table td:last-child { display: none !important; }
+
+      /* Keep colors for branding */
+      .shopee-text { color: #ee4d2d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .shopee-icon { background: #ee4d2d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .payment-total .pvalue { color: #ee4d2d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .items-table th { background: #f7f7f7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .payment-box { background: #f5f5f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      /* Page setup */
+      @page {
+        size: A4 portrait;
+        margin: 14mm 12mm 14mm 12mm;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page">
+
+  <!-- ===== SAVE AS PDF BAR ===== -->
+  <div class="pdf-bar">
+    <button class="btn-save-pdf" onclick="saveAsPDF()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <polyline points="9 15 12 18 15 15"/>
+      </svg>
+      Simpan sebagai PDF
+    </button>
+  </div>
+
+  <div class="page" id="invoicePage">
     <!-- Shopee Logo -->
     <div class="shopee-header">
       <div class="shopee-logo">
@@ -224,23 +330,22 @@
       </div>
     </div>
 
-    <!-- PLACEHOLDER: Rest of body (items table, payment, footer) -->
     <!-- Rincian Pesanan -->
     <div class="section-title">Rincian Pesanan</div>
     <div class="table-wrap">
-    <table class="items-table" id="itemsTable">
-      <thead>
-        <tr>
-          <th style="width:36px;">No.</th>
-          <th style="width:30px;">Produk</th>
-          <th style="width:110px;">Harga Produk</th>
-          <th style="width:80px;">Kuantitas</th>
-          <th style="width:110px;">Subtotal</th>
-          <th style="width:40px;"></th>
-        </tr>
-      </thead>
-      <tbody id="itemsBody"></tbody>
-    </table>
+      <table class="items-table" id="itemsTable">
+        <thead>
+          <tr>
+            <th style="width:36px;">No.</th>
+            <th style="width:30px;">Produk</th>
+            <th style="width:110px;">Harga Produk</th>
+            <th style="width:80px;">Kuantitas</th>
+            <th style="width:110px;">Subtotal</th>
+            <th style="width:40px;"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
     </div>
     <div class="table-actions">
       <button class="btn-add-row" onclick="addRow()">+ Tambah Produk</button>
@@ -285,6 +390,16 @@
   </div>
 
   <script>
+    /* ===== Save as PDF ===== */
+    function saveAsPDF() {
+      // Blur any active input so its current value is committed
+      if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+      // Small delay to ensure blur/recalc settles, then print
+      setTimeout(function() { window.print(); }, 80);
+    }
+
     /* ===== Utility Functions ===== */
     function dotFormat(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
     function parseNumber(s) { return parseInt(String(s).replace(/\./g, ''), 10); }
@@ -374,7 +489,6 @@
         var rowSub = item.price * item.qty;
         subtotal += rowSub;
         qty += item.qty;
-        // Update per-row subtotal cell
         var cell = document.querySelector('[data-sub="' + i + '"]');
         if (cell) cell.textContent = 'Rp' + dotFormat(rowSub);
       });
