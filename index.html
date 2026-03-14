@@ -89,9 +89,15 @@
     /* Footer Note */
     .footer-note { text-align: right; font-size: 11.5px; color: #888; margin-top: 18px; line-height: 1.6; }
 
-    /* ===== Responsive Design ===== */
+    /* Order meta editable inputs - blend seamlessly */
+    .meta-input { border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 13px; padding: 2px 4px; border-radius: 4px; color: #333; outline: none; transition: border-color 0.2s, background 0.2s; width: 100%; }
+    .meta-input:hover { border-color: #ddd; background: #fafafa; }
+    .meta-input:focus { border-color: #ee4d2d; background: #fff4f0; box-shadow: 0 0 0 2px rgba(238,77,45,0.1); }
+    .order-code-wrap { display: flex; align-items: center; gap: 4px; }
+    .btn-random { border: none; cursor: pointer; background: #ee4d2d; color: #fff; border-radius: 4px; font-size: 11px; padding: 3px 7px; font-weight: 600; transition: background 0.15s; }
+    .btn-random:hover { background: #d94425; }
 
-    /* Tablet: 481px – 768px */
+    /* ===== Responsive Design ===== */
     @media (max-width: 768px) {
       .page { padding: 22px 20px 30px; margin: 12px auto; }
       .shopee-icon { width: 40px; height: 40px; }
@@ -113,8 +119,6 @@
       .payment-box { padding: 16px 20px 18px; max-width: 100%; }
       .payment-total .pvalue { font-size: 20px; }
     }
-
-    /* Mobile: up to 480px */
     @media (max-width: 480px) {
       body { font-size: 13px; }
       .page { padding: 14px 12px 22px; margin: 0; border-radius: 0; box-shadow: none; min-height: 100vh; }
@@ -123,19 +127,13 @@
       .shopee-icon svg { width: 22px; height: 22px; }
       .shopee-text { font-size: 26px; }
       .section-title { font-size: 14px; margin-bottom: 8px; }
-
-      /* Info box stacks vertically */
       .info-box { font-size: 12px; padding: 10px 12px; line-height: 1.6; }
       .info-box .row { flex-direction: column; gap: 4px; }
       .info-box .address { font-size: 11.5px; word-break: break-word; }
-
-      /* Order meta: 2-column grid */
       .order-meta { flex-wrap: wrap; font-size: 12px; }
       .order-meta .col { flex: 1 1 48%; padding: 8px 10px; }
       .order-meta .col-header { font-size: 11px; }
       .order-meta .col-value { font-size: 11.5px; }
-
-      /* Table: horizontally scrollable */
       .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }
       .items-table { font-size: 11.5px; min-width: 520px; }
       .items-table th { padding: 6px 6px; font-size: 11px; white-space: nowrap; }
@@ -144,27 +142,17 @@
       .edit-input.input-name { min-width: 140px; }
       .edit-input.input-price { width: 75px; }
       .edit-input.input-qty { width: 45px; }
-
-      /* Subtotal row */
       .subtotal-row { font-size: 13px; gap: 16px; }
       .total-qty { font-size: 11px; margin-bottom: 16px; }
-
-      /* Payment box full-width */
       .payment-box { max-width: 100%; padding: 14px 14px 16px; margin-right: auto; }
       .payment-row .plabel, .payment-row .pvalue { font-size: 12px; }
       .input-pay { width: 90px; font-size: 12px; padding: 3px 5px; }
       .payment-total .plabel { font-size: 13px; }
       .payment-total .pvalue { font-size: 18px; }
-
-      /* Button sizing for touch */
       .btn-action { width: 32px; height: 32px; font-size: 18px; }
       .btn-add-row { padding: 9px 16px; font-size: 13px; }
-
-      /* Footer */
       .footer-note { font-size: 10.5px; margin-top: 14px; text-align: center; }
     }
-
-    /* Very small screens: under 360px */
     @media (max-width: 360px) {
       .page { padding: 10px 8px 18px; }
       .shopee-text { font-size: 22px; }
@@ -172,11 +160,10 @@
       .order-meta .col:last-child { border-bottom: none; }
       .payment-total .pvalue { font-size: 16px; }
     }
-
-    /* Print */
     @media print {
       body { background: #fff; }
       .page { box-shadow: none; margin: 0; padding: 20px; }
+      .btn-random { display: none; }
     }
   </style>
 </head>
@@ -216,11 +203,16 @@
     <div class="order-meta">
       <div class="col">
         <div class="col-header">No. Pesanan</div>
-        <div class="col-value">260309EYTO23BA</div>
+        <div class="col-value order-code-wrap">
+          <span id="orderNumberPrefix">260309</span><span id="orderNumberRandom">EYTO23BA</span>
+          <button class="btn-random" onclick="randomizeCode()" title="Random kode">&#8635;</button>
+        </div>
       </div>
       <div class="col">
         <div class="col-header">Tanggal Transaksi</div>
-        <div class="col-value">09/03/26</div>
+        <div class="col-value">
+          <input class="meta-input" id="inputDate" type="text" value="09/03/26" placeholder="DD/MM/YY" maxlength="8">
+        </div>
       </div>
       <div class="col">
         <div class="col-header">Metode Pembayaran</div>
@@ -232,6 +224,7 @@
       </div>
     </div>
 
+    <!-- PLACEHOLDER: Rest of body (items table, payment, footer) -->
     <!-- Rincian Pesanan -->
     <div class="section-title">Rincian Pesanan</div>
     <div class="table-wrap">
@@ -292,162 +285,123 @@
   </div>
 
   <script>
-    const initialItems = [
-      { name: 'Cartridge Toner Laserjet HP W1107A M107A 107A 107W 105A106A Compatible Plus Chip', price: 109000, qty: 8 },
-      { name: 'Cartridge Toner Brother TN B027 TNB027 Black Printer MFC-B7810DW HL-B2180DW DCP-B7640DW', price: 210000, qty: 4 }
+    /* ===== Utility Functions ===== */
+    function dotFormat(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+    function parseNumber(s) { return parseInt(String(s).replace(/\./g, ''), 10); }
+
+    /* ===== Random Code Generator ===== */
+    function randomizeCode() {
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      var code = '';
+      for (var i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      document.getElementById('orderNumberRandom').textContent = code;
+    }
+
+    /* ===== Date → Order Number Prefix ===== */
+    function updateOrderPrefix() {
+      var val = document.getElementById('inputDate').value.trim();
+      var parts = val.split('/');
+      if (parts.length === 3) {
+        var dd = parts[0].padStart(2, '0');
+        var mm = parts[1].padStart(2, '0');
+        var yy = parts[2].padStart(2, '0');
+        document.getElementById('orderNumberPrefix').textContent = yy + mm + dd;
+      }
+    }
+    document.getElementById('inputDate').addEventListener('input', updateOrderPrefix);
+    document.getElementById('inputDate').addEventListener('blur', updateOrderPrefix);
+
+    /* ===== Items Data ===== */
+    var items = [
+      { name: 'Nama Produk', price: 89000, qty: 2, active: true },
+      { name: 'Nama Produk', price: 89000, qty: 1, active: true }
     ];
 
-    function formatRp(n) {
-      if (isNaN(n) || n === 0) return 'Rp0';
-      return 'Rp' + n.toLocaleString('id-ID');
-    }
-
-    function formatRpSigned(n) {
-      if (isNaN(n) || n === 0) return '-Rp0';
-      return '-Rp' + n.toLocaleString('id-ID');
-    }
-
-    function parseNumber(str) {
-      var s = String(str).replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
-      return s === '' ? NaN : parseInt(s, 10);
-    }
-
-    function validate(input, type) {
-      var val = input.value.trim();
-      var msgEl = input.parentElement.querySelector('.validation-msg');
-      var isValid = true;
-      var msg = '';
-
-      if (type === 'name') {
-        if (val === '') { isValid = false; msg = 'Nama produk wajib diisi'; }
-      } else if (type === 'price') {
-        var num = parseNumber(val);
-        if (val === '') { isValid = false; msg = 'Harga wajib diisi'; }
-        else if (isNaN(num) || num < 0) { isValid = false; msg = 'Harga tidak valid'; }
-      } else if (type === 'qty') {
-        var num = parseNumber(val);
-        if (val === '') { isValid = false; msg = 'Kuantitas wajib diisi'; }
-        else if (isNaN(num) || num < 1) { isValid = false; msg = 'Min. 1'; }
-      }
-
-      input.classList.toggle('invalid', !isValid);
-      if (msgEl) {
-        msgEl.textContent = msg;
-        msgEl.classList.toggle('show', !isValid);
-      }
-      return isValid;
-    }
-
-    function recalculate() {
-      var rows = document.querySelectorAll('#itemsBody tr');
-      var grandTotal = 0;
-      var totalQty = 0;
-
-      rows.forEach(function(row) {
-        var priceInput = row.querySelector('.input-price');
-        var qtyInput = row.querySelector('.input-qty');
-        var subtotalCell = row.querySelector('.row-subtotal');
-        var price = parseNumber(priceInput.value);
-        var qty = parseNumber(qtyInput.value);
-
-        if (!isNaN(price) && !isNaN(qty) && qty >= 1 && price >= 0) {
-          var sub = price * qty;
-          subtotalCell.textContent = formatRp(sub);
-          grandTotal += sub;
-          totalQty += qty;
-        } else {
-          subtotalCell.textContent = '-';
-        }
+    function renderRows() {
+      var tbody = document.getElementById('itemsBody');
+      tbody.innerHTML = '';
+      items.forEach(function(item, i) {
+        if (!item.active) return;
+        var tr = document.createElement('tr');
+        var sub = item.price * item.qty;
+        tr.innerHTML =
+          '<td class="num">' + (i + 1) + '</td>' +
+          '<td><input class="edit-input input-name" value="' + escHtml(item.name) + '" data-idx="' + i + '" data-field="name"></td>' +
+          '<td class="price"><input class="edit-input input-price" value="' + dotFormat(item.price) + '" data-idx="' + i + '" data-field="price" inputmode="numeric"></td>' +
+          '<td class="num"><input class="edit-input input-qty" value="' + item.qty + '" data-idx="' + i + '" data-field="qty" inputmode="numeric"></td>' +
+          '<td class="price" data-sub="' + i + '">Rp' + dotFormat(sub) + '</td>' +
+          '<td class="num"><button class="btn-action btn-del" onclick="delRow(' + i + ')" title="Hapus">&#10005;</button></td>';
+        tbody.appendChild(tr);
       });
+      bindItemInputs();
+      recalculate();
+    }
 
-      document.getElementById('grandSubtotal').textContent = formatRp(grandTotal);
-      document.getElementById('totalQty').textContent = totalQty;
-      document.getElementById('paySubtotal').textContent = formatRp(grandTotal);
+    function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+    function addRow() {
+      items.push({ name: 'Nama Produk', price: 0, qty: 1, active: true });
+      renderRows();
+    }
+
+    function delRow(idx) {
+      items[idx].active = false;
+      renderRows();
+    }
+
+    function bindItemInputs() {
+      document.querySelectorAll('#itemsBody .edit-input').forEach(function(el) {
+        el.addEventListener('input', function() {
+          var idx = parseInt(this.dataset.idx);
+          var field = this.dataset.field;
+          if (field === 'name') items[idx].name = this.value;
+          else if (field === 'price') { var v = parseNumber(this.value); if (!isNaN(v)) items[idx].price = v; }
+          else if (field === 'qty') { var v = parseInt(this.value); if (!isNaN(v) && v >= 0) items[idx].qty = v; }
+          recalculate();
+        });
+        el.addEventListener('blur', function() {
+          var field = this.dataset.field;
+          if (field === 'price') { var v = parseNumber(this.value); if (!isNaN(v)) this.value = dotFormat(v); }
+        });
+      });
+    }
+
+    /* ===== Recalculate Totals ===== */
+    function recalculate() {
+      var subtotal = 0, qty = 0;
+      items.forEach(function(item, i) {
+        if (!item.active) return;
+        var rowSub = item.price * item.qty;
+        subtotal += rowSub;
+        qty += item.qty;
+        // Update per-row subtotal cell
+        var cell = document.querySelector('[data-sub="' + i + '"]');
+        if (cell) cell.textContent = 'Rp' + dotFormat(rowSub);
+      });
+      document.getElementById('grandSubtotal').textContent = 'Rp' + dotFormat(subtotal);
+      document.getElementById('totalQty').textContent = qty;
+      document.getElementById('paySubtotal').textContent = 'Rp' + dotFormat(subtotal);
 
       var shipping = parseNumber(document.getElementById('inputShipping').value) || 0;
       var service = parseNumber(document.getElementById('inputService').value) || 0;
       var discount = parseNumber(document.getElementById('inputDiscount').value) || 0;
-      var total = grandTotal + shipping + service - discount;
-      document.getElementById('payTotal').textContent = formatRp(total);
+      var total = subtotal + shipping + service - discount;
+      if (total < 0) total = 0;
+      document.getElementById('payTotal').textContent = 'Rp' + dotFormat(total);
     }
 
-    function renumberRows() {
-      var rows = document.querySelectorAll('#itemsBody tr');
-      rows.forEach(function(row, i) {
-        row.querySelector('.row-num').textContent = i + 1;
-      });
-    }
-
-    function createRow(item) {
-      var tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td class="num"><span class="row-num"></span></td>' +
-        '<td><input class="edit-input input-name" type="text" value="" placeholder="Nama produk..."><div class="validation-msg"></div></td>' +
-        '<td><input class="edit-input input-price" type="text" value="" placeholder="0" inputmode="numeric"><div class="validation-msg"></div></td>' +
-        '<td><input class="edit-input input-qty" type="text" value="" placeholder="1" inputmode="numeric"><div class="validation-msg"></div></td>' +
-        '<td class="price row-subtotal">-</td>' +
-        '<td class="num"><button class="btn-action btn-del" title="Hapus baris" onclick="deleteRow(this)">&times;</button></td>';
-
-      var nameInput = tr.querySelector('.input-name');
-      var priceInput = tr.querySelector('.input-price');
-      var qtyInput = tr.querySelector('.input-qty');
-
-      if (item) {
-        nameInput.value = item.name;
-        priceInput.value = item.price.toLocaleString('id-ID');
-        qtyInput.value = item.qty;
-      }
-
-      nameInput.addEventListener('input', function() { validate(this, 'name'); });
-      priceInput.addEventListener('input', function() {
-        validate(this, 'price');
-        recalculate();
-      });
-      priceInput.addEventListener('blur', function() {
-        var num = parseNumber(this.value);
-        if (!isNaN(num)) this.value = num.toLocaleString('id-ID');
-      });
-      qtyInput.addEventListener('input', function() {
-        validate(this, 'qty');
-        recalculate();
-      });
-      qtyInput.addEventListener('blur', function() {
-        var num = parseNumber(this.value);
-        if (!isNaN(num) && num >= 1) this.value = num;
-      });
-
-      return tr;
-    }
-
-    function addRow(item) {
-      var tbody = document.getElementById('itemsBody');
-      var tr = createRow(item || null);
-      tbody.appendChild(tr);
-      renumberRows();
-      recalculate();
-      if (!item) tr.querySelector('.input-name').focus();
-    }
-
-    function deleteRow(btn) {
-      var tbody = document.getElementById('itemsBody');
-      if (tbody.rows.length <= 1) return;
-      btn.closest('tr').remove();
-      renumberRows();
-      recalculate();
-    }
-
-    // Initialize
-    initialItems.forEach(function(item) { addRow(item); });
-
-    // Payment input listeners
+    /* ===== Payment Input Listeners ===== */
     ['inputShipping', 'inputService', 'inputDiscount'].forEach(function(id) {
       var el = document.getElementById(id);
       el.addEventListener('input', function() { recalculate(); });
       el.addEventListener('blur', function() {
         var num = parseNumber(this.value);
-        if (!isNaN(num)) this.value = num.toLocaleString('id-ID');
+        if (!isNaN(num)) this.value = dotFormat(num);
       });
     });
+
+    /* ===== Init ===== */
+    renderRows();
   </script>
 </body>
 </html>
