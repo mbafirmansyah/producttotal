@@ -217,7 +217,6 @@
     </button>
   </div>
 
-  <!-- TAB BAR -->
   <div class="tabs-bar" id="tabsBar">
     <div class="tab-item active" data-tab="0" onclick="switchTab(0)">Nota 1</div>
     <button class="tab-add" onclick="addNewTab()">+ Nota Baru</button>
@@ -238,7 +237,7 @@
     <div class="info-box">
       <div class="row">
         <div><span class="label">Nama Pembeli:</span> mbafirmansyah</div>
-        <div><span class="label">Nama Penjual:</span> TokoCartridge.Com</div>
+        <div style="display: flex; align-items: center;"><span class="label" style="margin-right: 4px;">Nama Penjual:</span> <input class="meta-input" id="inputSellerName" type="text" value="TokoCartridge.Com" style="width: 160px; padding: 0 4px;"></div>
       </div>
       <div class="address">
         <span class="label">Alamat Pembeli:</span><br>
@@ -319,6 +318,10 @@
         <span class="pvalue"><input class="edit-input input-pay input-discount" id="inputDiscount" type="text" value="12.000" inputmode="numeric"></span>
       </div>
       <div class="payment-row discount">
+        <span class="plabel">Diskon Voucher Toko</span>
+        <span class="pvalue"><input class="edit-input input-pay input-discount" id="inputShopVoucher" type="text" value="0" inputmode="numeric"></span>
+      </div>
+      <div class="payment-row discount">
         <span class="plabel">Diskon Voucher Shopee</span>
         <span class="pvalue"><input class="edit-input input-pay input-discount" id="inputVoucherDiscount" type="text" value="0" inputmode="numeric"></span>
       </div>
@@ -333,7 +336,6 @@
     </div>
   </div>
 
-  <!-- ACCUMULATION SECTION -->
   <div class="accum-section" id="accumSection" style="display:none;">
     <div class="accum-title">Akumulasi Semua Nota</div>
     <div class="accum-subtitle" id="accumSubtitle">Total 0 nota</div>
@@ -429,8 +431,10 @@
         shipping: '12.000',
         service: '3.000',
         discount: '12.000',
+        shopVoucherDiscount: '0',
         voucherDiscount: '0',
-        shippingMethod: 'Regular'
+        shippingMethod: 'Regular',
+        sellerName: 'TokoCartridge.Com'
       };
     }
 
@@ -444,8 +448,10 @@
       t.shipping = document.getElementById('inputShipping').value;
       t.service = document.getElementById('inputService').value;
       t.discount = document.getElementById('inputDiscount').value;
+      t.shopVoucherDiscount = document.getElementById('inputShopVoucher').value;
       t.voucherDiscount = document.getElementById('inputVoucherDiscount').value;
       t.shippingMethod = document.getElementById('selectShipping').value;
+      t.sellerName = document.getElementById('inputSellerName').value;
     }
 
     function loadTab(idx) {
@@ -457,8 +463,10 @@
       document.getElementById('inputShipping').value = t.shipping;
       document.getElementById('inputService').value = t.service;
       document.getElementById('inputDiscount').value = t.discount;
+      document.getElementById('inputShopVoucher').value = t.shopVoucherDiscount || '0';
       document.getElementById('inputVoucherDiscount').value = t.voucherDiscount;
       document.getElementById('selectShipping').value = t.shippingMethod;
+      document.getElementById('inputSellerName').value = t.sellerName || 'TokoCartridge.Com';
       renderRows();
     }
 
@@ -581,13 +589,14 @@
       var shipping = parseNumber(document.getElementById('inputShipping').value) || 0;
       var service = parseNumber(document.getElementById('inputService').value) || 0;
       var discount = parseNumber(document.getElementById('inputDiscount').value) || 0;
+      var shopVoucher = parseNumber(document.getElementById('inputShopVoucher').value) || 0;
       var voucherDiscount = parseNumber(document.getElementById('inputVoucherDiscount').value) || 0;
-      var total = subtotal + shipping + service - discount - voucherDiscount;
+      var total = subtotal + shipping + service - discount - shopVoucher - voucherDiscount;
       if (total < 0) total = 0;
       document.getElementById('payTotal').textContent = 'Rp' + dotFormat(total);
     }
 
-    ['inputShipping', 'inputService', 'inputDiscount', 'inputVoucherDiscount'].forEach(function(id) {
+    ['inputShipping', 'inputService', 'inputDiscount', 'inputShopVoucher', 'inputVoucherDiscount'].forEach(function(id) {
       var el = document.getElementById(id);
       el.addEventListener('input', function() { recalculate(); });
       el.addEventListener('blur', function() {
@@ -625,7 +634,7 @@
       var tbody = document.getElementById('accumBody');
       tbody.innerHTML = '';
       var globalNo = 0;
-      var grandSubtotal = 0, grandShipping = 0, grandService = 0, grandDiscount = 0, grandVoucher = 0, grandTotal = 0, grandQty = 0;
+      var grandSubtotal = 0, grandShipping = 0, grandService = 0, grandDiscount = 0, grandShopVoucher = 0, grandVoucher = 0, grandTotal = 0, grandQty = 0;
 
       tabs.forEach(function(t, ti) {
         var notaSubtotal = 0, notaQty = 0;
@@ -648,13 +657,15 @@
         var ship = parseNumber(t.shipping) || 0;
         var svc = parseNumber(t.service) || 0;
         var disc = parseNumber(t.discount) || 0;
+        var shopVouc = parseNumber(t.shopVoucherDiscount) || 0;
         var vouc = parseNumber(t.voucherDiscount) || 0;
-        var notaTotal = notaSubtotal + ship + svc - disc - vouc;
+        var notaTotal = notaSubtotal + ship + svc - disc - shopVouc - vouc;
         if (notaTotal < 0) notaTotal = 0;
         grandSubtotal += notaSubtotal;
         grandShipping += ship;
         grandService += svc;
         grandDiscount += disc;
+        grandShopVoucher += shopVouc;
         grandVoucher += vouc;
         grandTotal += notaTotal;
         grandQty += notaQty;
@@ -676,7 +687,8 @@
         '<div class="sum-row"><span class="slabel">Total Pengiriman</span><span class="svalue">Rp' + dotFormat(grandShipping) + '</span></div>' +
         '<div class="sum-row"><span class="slabel">Total Biaya Layanan</span><span class="svalue">Rp' + dotFormat(grandService) + '</span></div>' +
         '<div class="sum-row"><span class="slabel">Total Diskon Pengiriman</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandDiscount) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Diskon Voucher</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandVoucher) + '</span></div>' +
+        '<div class="sum-row"><span class="slabel">Total Diskon Voucher Toko</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandShopVoucher) + '</span></div>' +
+        '<div class="sum-row"><span class="slabel">Total Diskon Voucher Shopee</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandVoucher) + '</span></div>' +
         '<div class="sum-row"><span class="slabel">Total Kuantitas</span><span class="svalue">' + grandQty + ' produk</span></div>' +
         '<hr class="sum-divider">' +
         '<div class="sum-total"><span class="slabel">Grand Total Pembayaran</span><span class="svalue">Rp' + dotFormat(grandTotal) + '</span></div>';
