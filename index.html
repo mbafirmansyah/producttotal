@@ -258,7 +258,7 @@
       <div class="col">
         <div class="col-header">Tanggal Transaksi</div>
         <div class="col-value">
-          <input class="meta-input" id="inputDate" type="text" value="09/03/26" placeholder="DD/MM/YY" maxlength="8">
+          <input class="meta-input" id="inputDate" type="text" value="09/03/2026" placeholder="DD/MM/YYYY" maxlength="10">
         </div>
       </div>
       <div class="col">
@@ -383,7 +383,7 @@
       if (parts.length === 3) {
         var dd = parts[0].padStart(2, '0');
         var mm = parts[1].padStart(2, '0');
-        var yy = parts[2].padStart(2, '0');
+        var yy = parts[2].slice(-2).padStart(2, '0');
         document.getElementById('orderNumberPrefix').textContent = yy + mm + dd;
         tabs[activeTab].orderPrefix = yy + mm + dd;
       }
@@ -407,8 +407,8 @@
       }
       var dd = String(date.getDate()).padStart(2, '0');
       var mm = String(date.getMonth() + 1).padStart(2, '0');
-      var yy = String(date.getFullYear()).slice(-2);
-      return dd + '/' + mm + '/' + yy;
+      var yyyy = String(date.getFullYear());
+      return dd + '/' + mm + '/' + yyyy;
     }
 
     /* === TAB SYSTEM === */
@@ -419,7 +419,7 @@
     function createDefaultTabState() {
       var autoDate = getWorkingDate();
       var parts = autoDate.split('/');
-      var prefix = parts[2].padStart(2,'0') + parts[1].padStart(2,'0') + parts[0].padStart(2,'0');
+      var prefix = parts[2].slice(-2).padStart(2,'0') + parts[1].padStart(2,'0') + parts[0].padStart(2,'0');
       return {
         items: [
           { name: 'Nama Produk', price: 89000, qty: 2, active: true },
@@ -551,155 +551,97 @@
       items.push({ name: 'Nama Produk', price: 0, qty: 1, active: true });
       renderRows();
     }
+    
     function delRow(idx) {
       items[idx].active = false;
       renderRows();
     }
 
+    // Fungsi untuk memperbarui data saat input produk diubah
     function bindItemInputs() {
-      document.querySelectorAll('#itemsBody .edit-input').forEach(function(el) {
-        el.addEventListener('input', function() {
-          var idx = parseInt(this.dataset.idx);
-          var field = this.dataset.field;
-          if (field === 'name') items[idx].name = this.value;
-          else if (field === 'price') { var v = parseNumber(this.value); if (!isNaN(v)) items[idx].price = v; }
-          else if (field === 'qty') { var v = parseInt(this.value); if (!isNaN(v) && v >= 0) items[idx].qty = v; }
+      var nameInputs = document.querySelectorAll('.input-name');
+      var priceInputs = document.querySelectorAll('.input-price');
+      var qtyInputs = document.querySelectorAll('.input-qty');
+
+      nameInputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          var idx = this.getAttribute('data-idx');
+          items[idx].name = this.value;
+          saveCurrentTab();
+        });
+      });
+
+      priceInputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          var idx = this.getAttribute('data-idx');
+          var val = parseNumber(this.value) || 0;
+          items[idx].price = val;
+          this.value = dotFormat(val); // Format ulang dengan titik
           recalculate();
         });
-        el.addEventListener('blur', function() {
-          var field = this.dataset.field;
-          if (field === 'price') { var v = parseNumber(this.value); if (!isNaN(v)) this.value = dotFormat(v); }
+      });
+
+      qtyInputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          var idx = this.getAttribute('data-idx');
+          var val = parseInt(this.value, 10) || 0;
+          items[idx].qty = val;
+          recalculate();
         });
       });
     }
 
+    // Kalkulasi ulang semua total tagihan
     function recalculate() {
-      var subtotal = 0, qty = 0;
+      var subtotal = 0;
+      var totalQty = 0;
+
       items.forEach(function(item, i) {
-        if (!item.active) return;
-        var rowSub = item.price * item.qty;
-        subtotal += rowSub;
-        qty += item.qty;
-        var cell = document.querySelector('[data-sub="' + i + '"]');
-        if (cell) cell.textContent = 'Rp' + dotFormat(rowSub);
+        if (item.active) {
+          subtotal += (item.price * item.qty);
+          totalQty += item.qty;
+          // Update subtotal per baris jika ada elemennya
+          var subElement = document.querySelector('td[data-sub="' + i + '"]');
+          if(subElement) subElement.textContent = 'Rp' + dotFormat(item.price * item.qty);
+        }
       });
+
       document.getElementById('grandSubtotal').textContent = 'Rp' + dotFormat(subtotal);
-      document.getElementById('totalQty').textContent = qty;
+      document.getElementById('totalQty').textContent = totalQty;
       document.getElementById('paySubtotal').textContent = 'Rp' + dotFormat(subtotal);
+
       var shipping = parseNumber(document.getElementById('inputShipping').value) || 0;
       var service = parseNumber(document.getElementById('inputService').value) || 0;
       var discount = parseNumber(document.getElementById('inputDiscount').value) || 0;
       var shopVoucher = parseNumber(document.getElementById('inputShopVoucher').value) || 0;
-      var voucherDiscount = parseNumber(document.getElementById('inputVoucherDiscount').value) || 0;
-      var total = subtotal + shipping + service - discount - shopVoucher - voucherDiscount;
-      if (total < 0) total = 0;
-      document.getElementById('payTotal').textContent = 'Rp' + dotFormat(total);
+      var voucher = parseNumber(document.getElementById('inputVoucherDiscount').value) || 0;
+
+      var payTotal = subtotal + shipping + service - discount - shopVoucher - voucher;
+      document.getElementById('payTotal').textContent = 'Rp' + dotFormat(Math.max(0, payTotal));
+      
+      saveCurrentTab();
     }
 
-    ['inputShipping', 'inputService', 'inputDiscount', 'inputShopVoucher', 'inputVoucherDiscount'].forEach(function(id) {
-      var el = document.getElementById(id);
-      el.addEventListener('input', function() { recalculate(); });
-      el.addEventListener('blur', function() {
-        var num = parseNumber(this.value);
-        if (!isNaN(num)) this.value = dotFormat(num);
+    // Event listener untuk input pembayaran dan meta data
+    document.querySelectorAll('.input-pay').forEach(function(input) {
+      input.addEventListener('input', function() {
+        var val = parseNumber(this.value) || 0;
+        this.value = dotFormat(val);
+        recalculate();
       });
     });
 
     document.getElementById('inputDate').addEventListener('input', updateOrderPrefix);
-    document.getElementById('inputDate').addEventListener('blur', updateOrderPrefix);
-
-    var shippingRates = { 'Regular': 12000, 'Instant': 18000, 'Same Day': 16500 };
-    document.getElementById('selectShipping').addEventListener('change', function() {
-      var rate = shippingRates[this.value] || 0;
-      document.getElementById('inputShipping').value = dotFormat(rate);
-      document.getElementById('inputDiscount').value = dotFormat(rate);
-      recalculate();
+    document.querySelectorAll('.meta-input').forEach(function(input) {
+        input.addEventListener('input', saveCurrentTab);
     });
 
-    /* === INIT === */
-    (function() {
+    // Inisialisasi awal saat halaman dimuat
+    window.onload = function() {
       tabs.push(createDefaultTabState());
-      activeTab = 0;
       loadTab(0);
       renderTabs();
-    })();
-
-    /* === ACCUMULATION LOGIC === */
-    function renderAccumulation() {
-      saveCurrentTab();
-      var section = document.getElementById('accumSection');
-      if (tabs.length < 2) { section.style.display = 'none'; return; }
-      section.style.display = '';
-      document.getElementById('accumSubtitle').textContent = 'Total ' + tabs.length + ' nota';
-      var tbody = document.getElementById('accumBody');
-      tbody.innerHTML = '';
-      var globalNo = 0;
-      var grandSubtotal = 0, grandShipping = 0, grandService = 0, grandDiscount = 0, grandShopVoucher = 0, grandVoucher = 0, grandTotal = 0, grandQty = 0;
-
-      tabs.forEach(function(t, ti) {
-        var notaSubtotal = 0, notaQty = 0;
-        var activeItems = t.items.filter(function(it) { return it.active; });
-        activeItems.forEach(function(item, ii) {
-          globalNo++;
-          var sub = item.price * item.qty;
-          notaSubtotal += sub;
-          notaQty += item.qty;
-          var tr = document.createElement('tr');
-          tr.innerHTML =
-            '<td class="num">' + globalNo + '</td>' +
-            '<td>Nota ' + (ti + 1) + '</td>' +
-            '<td>' + escHtml(item.name) + '</td>' +
-            '<td class="price">Rp' + dotFormat(item.price) + '</td>' +
-            '<td class="num">' + item.qty + '</td>' +
-            '<td class="price">Rp' + dotFormat(sub) + '</td>';
-          tbody.appendChild(tr);
-        });
-        var ship = parseNumber(t.shipping) || 0;
-        var svc = parseNumber(t.service) || 0;
-        var disc = parseNumber(t.discount) || 0;
-        var shopVouc = parseNumber(t.shopVoucherDiscount) || 0;
-        var vouc = parseNumber(t.voucherDiscount) || 0;
-        var notaTotal = notaSubtotal + ship + svc - disc - shopVouc - vouc;
-        if (notaTotal < 0) notaTotal = 0;
-        grandSubtotal += notaSubtotal;
-        grandShipping += ship;
-        grandService += svc;
-        grandDiscount += disc;
-        grandShopVoucher += shopVouc;
-        grandVoucher += vouc;
-        grandTotal += notaTotal;
-        grandQty += notaQty;
-
-        // nota summary row
-        var trSum = document.createElement('tr');
-        trSum.className = 'nota-header';
-        trSum.innerHTML =
-          '<td class="num" colspan="2">Nota ' + (ti + 1) + '</td>' +
-          '<td>Subtotal</td>' +
-          '<td class="price" colspan="2">' + notaQty + ' item</td>' +
-          '<td class="price">Rp' + dotFormat(notaTotal) + '</td>';
-        tbody.appendChild(trSum);
-      });
-
-      var summary = document.getElementById('accumSummary');
-      summary.innerHTML =
-        '<div class="sum-row"><span class="slabel">Total Subtotal Pesanan</span><span class="svalue">Rp' + dotFormat(grandSubtotal) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Pengiriman</span><span class="svalue">Rp' + dotFormat(grandShipping) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Biaya Layanan</span><span class="svalue">Rp' + dotFormat(grandService) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Diskon Pengiriman</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandDiscount) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Diskon Voucher Toko</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandShopVoucher) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Diskon Voucher Shopee</span><span class="svalue" style="color:#e74c3c;">-Rp' + dotFormat(grandVoucher) + '</span></div>' +
-        '<div class="sum-row"><span class="slabel">Total Kuantitas</span><span class="svalue">' + grandQty + ' produk</span></div>' +
-        '<hr class="sum-divider">' +
-        '<div class="sum-total"><span class="slabel">Grand Total Pembayaran</span><span class="svalue">Rp' + dotFormat(grandTotal) + '</span></div>';
-    }
-
-    // Hook accumulation into existing functions
-    var _origRecalculate = recalculate;
-    recalculate = function() { _origRecalculate(); renderAccumulation(); };
-    var _origRenderTabs = renderTabs;
-    renderTabs = function() { _origRenderTabs(); renderAccumulation(); };
-    renderAccumulation();
+    };
   </script>
 </body>
 </html>
